@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Appointment - BookEase Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--indigo:#6366f1;--violet:#8b5cf6;--emerald:#10b981;--amber:#f59e0b;--dark:#0f0e17;--card:#1a1830;--card2:#211e35;--text:#e8e6f0;--muted:#8b8aa0;--border:rgba(255,255,255,0.08)}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);min-height:100vh}
+header{padding:20px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(15,14,23,0.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--indigo),var(--violet));-webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;text-decoration:none}
+header a.back{color:var(--muted);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px;transition:color .2s}
+header a.back:hover{color:var(--text)}
+.container{max-width:1100px;margin:0 auto;padding:40px 20px}
+.page-title{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.page-sub{font-size:15px;color:var(--muted);margin-bottom:40px}
+.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:768px){.booking-grid{grid-template-columns:1fr}}
+.provider-info{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:24px}
+.provider-header{display:flex;gap:18px;align-items:flex-start}
+.p-avatar{width:64px;height:64px;background:linear-gradient(135deg,var(--indigo),var(--violet));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;flex-shrink:0}
+.p-name{font-size:20px;font-weight:800}
+.p-cat{font-size:12px;color:var(--indigo);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:4px 0}
+.p-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-top:16px}
+.section-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.services-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.service-item{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--card2);border:2px solid transparent;border-radius:12px;cursor:pointer;transition:all .2s}
+.service-item:hover{border-color:rgba(99,102,241,0.4)}
+.service-item.selected{border-color:var(--indigo);background:rgba(99,102,241,0.08)}
+.service-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.service-info{flex:1}
+.service-name{font-size:14px;font-weight:700}
+.service-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.service-price{font-size:14px;font-weight:700;color:var(--emerald)}
+.calendar-section{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.cal-title{font-size:16px;font-weight:700}
+.cal-nav{background:var(--card2);border:none;color:var(--text);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;transition:background .2s}
+.cal-nav:hover{background:rgba(99,102,241,0.2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day-name{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0;text-transform:uppercase}
+.cal-day{text-align:center;padding:8px 4px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid transparent}
+.cal-day.empty{background:none;cursor:default;border:none}
+.cal-day.past{color:var(--muted);cursor:not-allowed;opacity:0.4}
+.cal-day.available{background:rgba(99,102,241,0.08);color:var(--text)}
+.cal-day.available:hover{background:rgba(99,102,241,0.2);border-color:var(--indigo)}
+.cal-day.selected{background:linear-gradient(135deg,var(--indigo),var(--violet));color:white;border-color:transparent}
+.cal-day.today{border-color:var(--indigo)}
+.slots-section{margin-top:24px}
+.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px}
+.slot{padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.slot:hover{border-color:var(--indigo);background:rgba(99,102,241,0.1)}
+.slot.selected{background:linear-gradient(135deg,var(--indigo),var(--violet));border-color:transparent;color:white}
+.no-slots{font-size:14px;color:var(--muted);padding:16px;text-align:center;background:var(--card2);border-radius:10px}
+.booking-form{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.form-group input,.form-group textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;transition:border .2s}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--indigo)}
+.form-group textarea{height:90px;resize:vertical}
+.booking-summary{background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.2);border-radius:14px;padding:20px;margin-bottom:20px}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:14px}
+.summary-row:last-child{border-bottom:none;font-weight:700;font-size:15px;color:var(--emerald)}
+.summary-label{color:var(--muted)}
+.btn-book{width:100%;padding:16px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-book:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,0.4)}
+.btn-book:disabled{opacity:0.5;cursor:not-allowed}
+.success-screen{display:none;text-align:center;padding:60px 20px}
+.success-screen h2{font-size:32px;font-weight:900;margin-bottom:12px}
+.success-screen p{font-size:15px;color:var(--muted);margin-bottom:8px}
+.ref-code{display:inline-block;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);padding:16px 32px;border-radius:12px;font-family:monospace;font-size:24px;font-weight:800;color:var(--indigo);letter-spacing:3px;margin:20px 0}
+.btn-outline-small{padding:10px 24px;border:1px solid var(--border);color:var(--text);border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;display:inline-block;margin:4px;transition:all .2s}
+.btn-outline-small:hover{border-color:var(--indigo)}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alert{padding:12px 16px;border-radius:8px;font-size:14px;margin-bottom:16px}
+.alert.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171}
+.search-input{width:100%;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;margin-bottom:16px}
+.search-input:focus{outline:none;border-color:var(--indigo)}
+.search-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.search-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s}
+.search-card:hover{border-color:var(--indigo);transform:translateY(-2px)}
+.search-card-abbr{font-size:22px;font-weight:800;color:var(--indigo);margin-bottom:10px}
+.search-card-cat{font-size:12px;color:var(--indigo);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.search-card-name{font-size:15px;font-weight:700;margin:4px 0}
+.search-card-meta{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">BookEase Pro</a>
+  <a href="/" class="back">&larr; Back to Home</a>
+</header>
+
+<div class="container">
+  <div id="mainContent">
+    <h1 class="page-title">Book an Appointment</h1>
+    <p class="page-sub">Select a service, pick a date and time, then confirm your details.</p>
+
+    <div id="providerSearch" style="display:none;margin-bottom:32px">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search for a provider or service..." oninput="searchProviders()">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="booking-grid" id="bookingGrid" style="display:none">
+      <div>
+        <div class="provider-info" id="providerInfo"></div>
+        <div class="section-label">Choose a Service</div>
+        <div class="services-list" id="servicesList"></div>
+        <div class="calendar-section">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="changeMonth(-1)">&lsaquo;</button>
+            <div class="cal-title" id="calTitle"></div>
+            <button class="cal-nav" onclick="changeMonth(1)">&rsaquo;</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="slots-section" id="slotsSection" style="display:none">
+            <div class="section-label" style="margin-top:20px">Available Times</div>
+            <div class="slots-grid" id="slotsGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="booking-form">
+          <div class="section-label" style="margin-bottom:20px">Your Details</div>
+          <div id="bookingAlert"></div>
+          <div class="form-group"><label>Full Name *</label><input type="text" id="clientName" placeholder="Enter your full name"></div>
+          <div class="form-group"><label>Email Address *</label><input type="email" id="clientEmail" placeholder="yourname@example.com"></div>
+          <div class="form-group"><label>Phone Number</label><input type="tel" id="clientPhone" placeholder="+254 700 000 000"></div>
+          <div class="form-group"><label>Notes (optional)</label><textarea id="clientNotes" placeholder="Any special requests or information..."></textarea></div>
+          <div class="booking-summary" id="bookingSummary" style="display:none">
+            <div class="summary-row"><span class="summary-label">Service</span><span id="sumService">-</span></div>
+            <div class="summary-row"><span class="summary-label">Date</span><span id="sumDate">-</span></div>
+            <div class="summary-row"><span class="summary-label">Time</span><span id="sumTime">-</span></div>
+            <div class="summary-row"><span class="summary-label">Total</span><span id="sumPrice">-</span></div>
+          </div>
+          <button class="btn-book" id="bookBtn" onclick="submitBooking()" disabled>Select a service and time to book</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <h2>Appointment Booked</h2>
+    <p>A confirmation email has been sent to you.</p>
+    <p style="margin-bottom:16px">Your booking reference:</p>
+    <div class="ref-code" id="refCode"></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:24px">Save this reference to reschedule or cancel your appointment.</p>
+    <a href="/" class="btn-outline-small">&larr; Back to Home</a>
+    <a href="booking.html" class="btn-outline-small">Book Another Appointment</a>
+  </div>
+</div>
+
+<script>
+var API = 'http://localhost:5000/api';
+var selectedProvider = null, selectedService = null, selectedDate = null, selectedSlot = null;
+var currentYear = new Date().getFullYear(), currentMonth = new Date().getMonth();
+var availability = [];
+var params = new URLSearchParams(window.location.search);
+var providerId = params.get('provider');
+
+window.onload = function() {
+    if (providerId) { loadProvider(providerId); }
+    else { document.getElementById('providerSearch').style.display = 'block'; searchProviders(); }
+};
+
+async function loadProvider(id) {
+    try {
+        var res = await fetch(API + '/providers/' + id + '/public');
+        var data = await res.json();
+        if (!data.success) { document.getElementById('providerSearch').style.display = 'block'; return; }
+        selectedProvider = data.provider;
+        availability = data.availability;
+        var abbr = data.provider.business_name.split(' ').slice(0, 2).map(function(w) { return w[0]; }).join('');
+        document.getElementById('providerInfo').innerHTML =
+            '<div class="provider-header">' +
+            '<div class="p-avatar">' + abbr + '</div>' +
+            '<div><div class="p-name">' + data.provider.business_name + '</div>' +
+            '<div class="p-cat">' + data.provider.category + '</div>' +
+            '<div style="font-size:13px;color:var(--muted)">' + data.provider.phone + '</div></div></div>' +
+            (data.provider.description ? '<div class="p-desc">' + data.provider.description + '</div>' : '');
+        renderServices(data.services);
+        renderCalendar();
+        document.getElementById('bookingGrid').style.display = 'grid';
+    } catch (e) { console.error(e); document.getElementById('providerSearch').style.display = 'block'; }
+}
+
+function renderServices(services) {
+    if (!services || services.length === 0) { document.getElementById('servicesList').innerHTML = '<p style="color:var(--muted);font-size:14px">No services available.</p>'; return; }
+    document.getElementById('servicesList').innerHTML = services.map(function(s) {
+        return '<div class="service-item" id="svc-' + s.id + '" onclick="selectService(\'' + s.id + '\',\'' + s.name.replace(/'/g, "\\'") + '\',' + s.duration_minutes + ',' + s.price + ',\'' + s.color + '\')">' +
+            '<div class="service-dot" style="background:' + s.color + '"></div>' +
+            '<div class="service-info"><div class="service-name">' + s.name + '</div><div class="service-meta">' + s.duration_minutes + ' min</div></div>' +
+            '<div class="service-price">KES ' + parseFloat(s.price).toLocaleString() + '</div></div>';
+    }).join('');
+}
+
+function selectService(id, name, duration, price, color) {
+    selectedService = { id: id, name: name, duration: duration, price: price, color: color };
+    selectedDate = null; selectedSlot = null;
+    document.querySelectorAll('.service-item').forEach(function(el) { el.classList.remove('selected'); });
+    document.getElementById('svc-' + id).classList.add('selected');
+    document.getElementById('slotsSection').style.display = 'none';
+    renderCalendar(); updateSummary();
+}
+
+function renderCalendar() {
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calTitle').textContent = months[currentMonth] + ' ' + currentYear;
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var today = new Date(); today.setHours(0,0,0,0);
+    var firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    var daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    var availDays = availability.map(function(a) { return a.day_of_week; });
+    var html = days.map(function(d) { return '<div class="cal-day-name">' + d + '</div>'; }).join('');
+    for (var i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+    for (var d = 1; d <= daysInMonth; d++) {
+        var date = new Date(currentYear, currentMonth, d);
+        var mm = String(currentMonth + 1).padStart(2, '0');
+        var dd = String(d).padStart(2, '0');
+        var dateStr = currentYear + '-' + mm + '-' + dd;
+        var isPast = date < today;
+        var isToday = date.getTime() === today.getTime();
+        var isAvail = availDays.indexOf(date.getDay()) !== -1;
+        var isSel = dateStr === selectedDate;
+        var cls = 'cal-day';
+        if (isPast) cls += ' past';
+        else if (isSel) cls += ' selected';
+        else if (isAvail && selectedService) cls += ' available';
+        else cls += ' past';
+        if (isToday && !isSel) cls += ' today';
+        var click = (!isPast && isAvail && selectedService) ? 'onclick="selectDate(\'' + dateStr + '\')"' : '';
+        html += '<div class="' + cls + '" ' + click + '>' + d + '</div>';
+    }
+    document.getElementById('calGrid').innerHTML = html;
+}
+
+async function selectDate(dateStr) {
+    if (!selectedService) return;
+    selectedDate = dateStr; selectedSlot = null;
+    renderCalendar();
+    document.getElementById('slotsSection').style.display = 'block';
+    document.getElementById('slotsGrid').innerHTML = '<div style="color:var(--muted);font-size:14px;padding:8px">Loading available times...</div>';
+    try {
+        var res = await fetch(API + '/appointments/slots/' + selectedProvider.id + '?date=' + dateStr + '&service_type_id=' + selectedService.id);
+        var data = await res.json();
+        if (!data.slots || data.slots.length === 0) {
+            document.getElementById('slotsGrid').innerHTML = '<div class="no-slots">No available slots on this day.</div>';
+        } else {
+            document.getElementById('slotsGrid').innerHTML = data.slots.map(function(s) {
+                return '<div class="slot" id="slot-' + s.start + '" onclick="selectSlot(\'' + s.start + '\',\'' + s.end + '\')">' + s.start + '</div>';
+            }).join('');
+        }
+    } catch (e) { document.getElementById('slotsGrid').innerHTML = '<div class="no-slots">Error loading slots. Please try again.</div>'; }
+    updateSummary();
+}
+
+function selectSlot(start, end) {
+    selectedSlot = { start: start, end: end };
+    document.querySelectorAll('.slot').forEach(function(el) { el.classList.remove('selected'); });
+    var el = document.getElementById('slot-' + start);
+    if (el) el.classList.add('selected');
+    updateSummary();
+}
+
+function changeMonth(dir) {
+    currentMonth += dir;
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    renderCalendar();
+}
+
+function updateSummary() {
+    var hasSvc = !!selectedService, hasDate = !!selectedDate, hasSlot = !!selectedSlot;
+    var btn = document.getElementById('bookBtn');
+    if (hasSvc) {
+        document.getElementById('bookingSummary').style.display = 'block';
+        document.getElementById('sumService').textContent = selectedService.name;
+        document.getElementById('sumDate').textContent = hasDate ? new Date(selectedDate + 'T00:00:00').toDateString() : '-';
+        document.getElementById('sumTime').textContent = hasSlot ? selectedSlot.start + ' - ' + selectedSlot.end : '-';
+        document.getElementById('sumPrice').textContent = 'KES ' + parseFloat(selectedService.price).toLocaleString();
+    }
+    if (hasSvc && hasDate && hasSlot) { btn.disabled = false; btn.textContent = 'Confirm Booking'; }
+    else { btn.disabled = true; btn.textContent = !hasSvc ? 'Select a service first' : !hasDate ? 'Pick a date' : 'Pick a time slot'; }
+}
+
+async function submitBooking() {
+    var name = document.getElementById('clientName').value.trim();
+    var email = document.getElementById('clientEmail').value.trim();
+    var phone = document.getElementById('clientPhone').value.trim();
+    var notes = document.getElementById('clientNotes').value.trim();
+    var alertEl = document.getElementById('bookingAlert');
+    alertEl.innerHTML = '';
+    if (!name || !email) { alertEl.innerHTML = '<div class="alert error">Please enter your name and email address.</div>'; return; }
+    if (!selectedService || !selectedDate || !selectedSlot) { alertEl.innerHTML = '<div class="alert error">Please select a service, date, and time slot.</div>'; return; }
+    var btn = document.getElementById('bookBtn');
+    btn.innerHTML = '<span class="loading"></span>Booking...'; btn.disabled = true;
+    try {
+        var res = await fetch(API + '/appointments/book', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider_id: selectedProvider.id, service_type_id: selectedService.id, appointment_date: selectedDate, start_time: selectedSlot.start, client_name: name, client_email: email, client_phone: phone || null, client_notes: notes || null })
+        });
+        var data = await res.json();
+        if (data.success) {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+            document.getElementById('refCode').textContent = data.booking_reference;
+        } else { alertEl.innerHTML = '<div class="alert error">' + data.message + '</div>'; btn.textContent = 'Confirm Booking'; btn.disabled = false; }
+    } catch (e) { alertEl.innerHTML = '<div class="alert error">Connection error. Please try again.</div>'; btn.textContent = 'Confirm Booking'; btn.disabled = false; }
+}
+
+async function searchProviders() {
+    var q = document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
+    try {
+        var res = await fetch(API + '/providers?search=' + encodeURIComponent(q));
+        var data = await res.json();
+        var resultsEl = document.getElementById('searchResults');
+        if (!data.providers || data.providers.length === 0) { resultsEl.innerHTML = '<p style="color:var(--muted);font-size:14px">No providers found.</p>'; return; }
+        resultsEl.innerHTML = data.providers.map(function(p) {
+            var abbr = p.business_name.split(' ').slice(0, 2).map(function(w) { return w[0]; }).join('');
+            return '<div class="search-card" onclick="loadProvider(\'' + p.id + '\');document.getElementById(\'providerSearch\').style.display=\'none\';document.getElementById(\'bookingGrid\').style.display=\'grid\'">' +
+                '<div class="search-card-abbr">' + abbr + '</div>' +
+                '<div class="search-card-cat">' + p.category + '</div>' +
+                '<div class="search-card-name">' + p.business_name + '</div>' +
+                '<div class="search-card-meta">' + p.service_count + ' services available</div></div>';
+        }).join('');
+    } catch (e) { console.error(e); }
+}
+</script>
+</body>
+</html>

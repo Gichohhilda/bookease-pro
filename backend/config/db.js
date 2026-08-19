@@ -1,0 +1,42 @@
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'booking_system',
+    waitForConnections: true,
+    connectionLimit: 10,
+    charset: 'utf8mb4',
+    timezone: '+03:00',
+    enableKeepAlive: true
+});
+
+async function testConnection() {
+    try {
+        const connection = await pool.getConnection();
+        console.log('MySQL connected successfully');
+        connection.release();
+    } catch (error) {
+        console.error('MySQL connection failed:', error.message);
+        process.exit(1);
+    }
+}
+
+async function query(sql, params = []) {
+    const [results] = await pool.execute(sql, params);
+    return results;
+}
+
+async function queryOne(sql, params = []) {
+    const results = await query(sql, params);
+    return results[0] || null;
+}
+
+async function getConnection() {
+    return await pool.getConnection();
+}
+
+module.exports = { pool, query, queryOne, getConnection, testConnection };

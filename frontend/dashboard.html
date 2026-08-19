@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - BookEase Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--indigo:#6366f1;--violet:#8b5cf6;--emerald:#10b981;--amber:#f59e0b;--red:#ef4444;--dark:#0f0e17;--card:#1a1830;--card2:#211e35;--text:#e8e6f0;--muted:#8b8aa0;--border:rgba(255,255,255,0.08)}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:50}
+.sidebar-logo{padding:28px 24px;border-bottom:1px solid var(--border)}
+.logo-text{font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--indigo),var(--violet));-webkit-background-clip:text;background-clip:text; -webkit-text-fill-color:transparent}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 24px;color:var(--muted);font-size:14px;font-weight:500;transition:all .2s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04)}
+.nav-item.active{color:var(--indigo);background:rgba(99,102,241,0.1);border-right:2px solid var(--indigo)}
+.nav-icon{font-size:13px;font-weight:700;color:inherit;width:22px;text-align:center}
+.sidebar-footer{padding:20px 24px;border-top:1px solid var(--border)}
+.provider-chip{display:flex;align-items:center;gap:12px}
+.chip-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--indigo),var(--violet));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0}
+.chip-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.chip-role{font-size:11px;color:var(--muted)}
+.btn-logout{margin-top:12px;width:100%;padding:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-logout:hover{background:rgba(239,68,68,0.2)}
+.main{margin-left:260px;flex:1;min-height:100vh}
+.topbar{padding:20px 36px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(15,14,23,0.6);backdrop-filter:blur(10px);position:sticky;top:0;z-index:40}
+.topbar h1{font-size:22px;font-weight:800}
+.topbar-right{display:flex;gap:12px;align-items:center}
+.date-badge{background:var(--card2);border:1px solid var(--border);padding:8px 16px;border-radius:8px;font-size:13px;color:var(--muted)}
+.btn-booking-link{padding:8px 16px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:white;text-decoration:none;border-radius:8px;font-size:13px;font-weight:700}
+.content{padding:36px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:36px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all .2s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.stat-label-top{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.stat-val{font-size:32px;font-weight:900;margin-bottom:4px}
+.stat-desc{font-size:13px;color:var(--muted)}
+.stat-card.primary .stat-val{background:linear-gradient(135deg,var(--indigo),var(--violet));-webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+.stat-card.green .stat-val{color:var(--emerald)}
+.stat-card.amber .stat-val{color:var(--amber)}
+.stat-card.red .stat-val{color:var(--red)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-size:18px;font-weight:700}
+.btn-sm{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;border:none}
+.btn-sm.primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:white}
+.btn-sm.outline{background:none;border:1px solid var(--border);color:var(--text)}
+.btn-sm.outline:hover{border-color:var(--indigo)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:14px 20px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02)}
+td{padding:14px 20px;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+.badge.confirmed{background:rgba(99,102,241,0.15);color:var(--indigo)}
+.badge.completed{background:rgba(16,185,129,0.15);color:var(--emerald)}
+.badge.cancelled{background:rgba(239,68,68,0.15);color:#f87171}
+.badge.no_show{background:rgba(245,158,11,0.15);color:var(--amber)}
+.action-btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s;margin-right:4px}
+.action-btn.complete{background:rgba(16,185,129,0.15);color:var(--emerald)}
+.action-btn.cancel{background:rgba(239,68,68,0.1);color:#f87171}
+.tabs{display:flex;gap:4px;background:var(--card2);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content}
+.tab{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);font-family:inherit;transition:all .2s}
+.tab.active{background:var(--card);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.panel{display:none}
+.panel.active{display:block}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
+.svc-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;transition:all .2s}
+.svc-card:hover{border-color:rgba(99,102,241,0.3)}
+.svc-color-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle}
+.svc-name{font-size:15px;font-weight:700;margin-bottom:6px}
+.svc-meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+.svc-price{font-size:18px;font-weight:800;color:var(--emerald)}
+.svc-actions{margin-top:14px;display:flex;gap:8px}
+.timeline{display:flex;flex-direction:column;gap:10px}
+.timeline-item{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;background:var(--card2);border-radius:12px;border-left:3px solid var(--indigo)}
+.t-time{font-size:13px;font-weight:700;color:var(--indigo);min-width:48px;margin-top:2px}
+.t-name{font-size:14px;font-weight:700}
+.t-service{font-size:12px;color:var(--muted);margin-top:2px}
+.t-status{margin-left:auto}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state p{font-size:14px;margin-top:12px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:36px;width:90%;max-width:440px;position:relative}
+.modal h3{font-size:20px;font-weight:800;margin-bottom:20px}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.form-group input,.form-group select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:14px;font-family:inherit;transition:border .2s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--indigo)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-modal{padding:12px 24px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all .2s}
+.btn-modal.primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:white}
+.btn-modal.ghost{background:none;border:1px solid var(--border);color:var(--text)}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">BookEase Pro</div>
+    <div class="logo-sub">Provider Dashboard</div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showPanel('overview',this)"><span class="nav-icon">Ov</span>Overview</button>
+    <button class="nav-item" onclick="showPanel('appointments',this)"><span class="nav-icon">Ap</span>Appointments</button>
+    <button class="nav-item" onclick="showPanel('services',this)"><span class="nav-icon">Sv</span>My Services</button>
+    <button class="nav-item" onclick="showPanel('availability',this)"><span class="nav-icon">Av</span>Availability</button>
+    <button class="nav-item" onclick="showPanel('reports',this)"><span class="nav-icon">Rp</span>Reports</button>
+    <button class="nav-item" onclick="showPanel('profile',this)"><span class="nav-icon">St</span>Settings</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="provider-chip">
+      <div class="chip-avatar" id="sidebarAbbr">--</div>
+      <div><div class="chip-name" id="sidebarName">Loading...</div><div class="chip-role">Service Provider</div></div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Log Out</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <h1 id="panelTitle">Overview</h1>
+    <div class="topbar-right">
+      <div class="date-badge" id="todayDate"></div>
+      <a href="/booking.html" target="_blank" class="btn-booking-link" id="bookingPageLink">My Booking Page</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="panel active" id="panel-overview">
+      <div class="stats-grid">
+        <div class="stat-card primary"><div class="stat-label-top">Today</div><div class="stat-val" id="statToday">-</div><div class="stat-desc">Appointments today</div></div>
+        <div class="stat-card primary"><div class="stat-label-top">This Month</div><div class="stat-val" id="statMonth">-</div><div class="stat-desc">Appointments this month</div></div>
+        <div class="stat-card green"><div class="stat-label-top">Revenue</div><div class="stat-val" id="statRevenue">-</div><div class="stat-desc">KES earned this month</div></div>
+        <div class="stat-card green"><div class="stat-label-top">Completed</div><div class="stat-val" id="statCompleted">-</div><div class="stat-desc">Completed this month</div></div>
+        <div class="stat-card amber"><div class="stat-label-top">Upcoming</div><div class="stat-val" id="statPending">-</div><div class="stat-desc">Confirmed upcoming</div></div>
+        <div class="stat-card red"><div class="stat-label-top">No-Shows</div><div class="stat-val" id="statNoShow">-</div><div class="stat-desc">No-shows this month</div></div>
+      </div>
+      <div class="section-header"><div class="section-title">Today's Schedule</div></div>
+      <div class="timeline" id="todayTimeline"><div class="empty-state"><p>Loading today's schedule...</p></div></div>
+    </div>
+
+    <div class="panel" id="panel-appointments">
+      <div class="tabs">
+        <button class="tab active" onclick="filterAppts('all',this)">All</button>
+        <button class="tab" onclick="filterAppts('confirmed',this)">Confirmed</button>
+        <button class="tab" onclick="filterAppts('completed',this)">Completed</button>
+        <button class="tab" onclick="filterAppts('cancelled',this)">Cancelled</button>
+        <button class="tab" onclick="filterAppts('no_show',this)">No-Show</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Client</th><th>Service</th><th>Date and Time</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="apptsBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-services">
+      <div class="section-header">
+        <div class="section-title">My Services</div>
+        <button class="btn-sm primary" onclick="openServiceModal()">+ Add Service</button>
+      </div>
+      <div class="services-grid" id="servicesGrid"><div style="color:var(--muted)">Loading...</div></div>
+    </div>
+
+    <div class="panel" id="panel-availability">
+      <div class="section-header">
+        <div class="section-title">Weekly Availability</div>
+        <button class="btn-sm primary" onclick="saveAvailability()">Save Changes</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Day</th><th>Available</th><th>Start Time</th><th>End Time</th></tr></thead>
+          <tbody id="availBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-reports">
+      <div class="stats-grid" id="reportStats" style="margin-bottom:32px"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <div class="section-header"><div class="section-title">Bookings by Service</div></div>
+          <div class="table-wrap"><table><thead><tr><th>Service</th><th>Bookings</th><th>Revenue</th></tr></thead><tbody id="serviceReport"></tbody></table></div>
+        </div>
+        <div>
+          <div class="section-header"><div class="section-title">Top Clients</div></div>
+          <div class="table-wrap"><table><thead><tr><th>Client</th><th>Bookings</th><th>Spent</th></tr></thead><tbody id="clientReport"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-profile">
+      <div style="max-width:520px">
+        <div class="section-title" style="margin-bottom:24px">Account Settings</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px">
+          <div class="form-group"><label>Business Name</label><input type="text" id="profBusiness"></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="profPhone"></div>
+          <div class="form-group"><label>Category</label>
+            <select id="profCategory">
+              <option value="Healthcare">Healthcare</option>
+              <option value="Legal">Legal Services</option>
+              <option value="Education">Education</option>
+              <option value="Beauty">Beauty and Wellness</option>
+              <option value="Consulting">Consulting</option>
+              <option value="Finance">Finance</option>
+              <option value="General">General</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Description</label><input type="text" id="profDesc"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Opens At</label><input type="time" id="profStart"></div>
+            <div class="form-group"><label>Closes At</label><input type="time" id="profEnd"></div>
+          </div>
+          <div class="form-group"><label>Buffer Between Appointments (minutes)</label><input type="number" id="profBuffer" min="0" max="120"></div>
+          <div id="profileMsg" style="font-size:13px;margin-bottom:12px"></div>
+          <button class="btn-sm primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="modal-overlay" id="serviceModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+    <h3 id="serviceModalTitle">Add New Service</h3>
+    <div class="form-group"><label>Service Name</label><input type="text" id="svcName" placeholder="e.g. General Consultation"></div>
+    <div class="form-group"><label>Description</label><input type="text" id="svcDesc" placeholder="Brief description..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Duration (minutes)</label><input type="number" id="svcDuration" placeholder="60" min="15" max="480"></div>
+      <div class="form-group"><label>Price (KES)</label><input type="number" id="svcPrice" placeholder="2500" min="0"></div>
+    </div>
+    <div class="form-group"><label>Colour</label><input type="color" id="svcColor" value="#6366f1" style="height:40px;cursor:pointer;padding:4px"></div>
+    <div class="modal-footer">
+      <button class="btn-modal ghost" onclick="closeServiceModal()">Cancel</button>
+      <button class="btn-modal primary" onclick="saveService()">Save Service</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var API = 'http://localhost:5000/api';
+var token = localStorage.getItem('token');
+var provider = JSON.parse(localStorage.getItem('provider') || '{}');
+var editingServiceId = null;
+
+if (!token) { window.location.href = '/'; }
+
+var abbr = provider.business_name ? provider.business_name.split(' ').slice(0,2).map(function(w){return w[0];}).join('') : '--';
+document.getElementById('sidebarAbbr').textContent = abbr;
+document.getElementById('sidebarName').textContent = provider.business_name || 'Provider';
+document.getElementById('todayDate').textContent = new Date().toDateString();
+if (provider.id) { document.getElementById('bookingPageLink').href = '/booking.html?provider=' + provider.id; }
+
+var authHeaders = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+var panelTitles = { overview:'Overview', appointments:'Appointments', services:'My Services', availability:'Availability', reports:'Reports and Analytics', profile:'Settings' };
+
+function showPanel(name, el) {
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+    document.getElementById('panel-' + name).classList.add('active');
+    if (el) el.classList.add('active');
+    document.getElementById('panelTitle').textContent = panelTitles[name] || name;
+    if (name === 'appointments') loadAppointments('all');
+    if (name === 'services') loadServices();
+    if (name === 'availability') loadAvailability();
+    if (name === 'reports') loadReports();
+    if (name === 'profile') loadProfile();
+}
+
+async function loadDashboard() {
+    try {
+        var sumRes = await fetch(API + '/reports/summary', { headers: authHeaders });
+        var todayRes = await fetch(API + '/appointments/today', { headers: authHeaders });
+        var sum = await sumRes.json();
+        var today = await todayRes.json();
+        if (sum.success) {
+            document.getElementById('statToday').textContent = sum.summary.today_appointments;
+            document.getElementById('statMonth').textContent = sum.summary.month_appointments;
+            document.getElementById('statRevenue').textContent = Number(sum.summary.month_revenue).toLocaleString();
+            document.getElementById('statCompleted').textContent = sum.summary.completed_count;
+            document.getElementById('statPending').textContent = sum.summary.pending_count;
+            document.getElementById('statNoShow').textContent = sum.summary.no_show_count;
+        }
+        if (today.success) {
+            var tl = document.getElementById('todayTimeline');
+            if (!today.appointments.length) {
+                tl.innerHTML = '<div class="empty-state"><p>No appointments scheduled for today.</p></div>';
+            } else {
+                tl.innerHTML = today.appointments.map(function(a) {
+                    return '<div class="timeline-item" style="border-left-color:' + (a.service_color||'var(--indigo)') + '">' +
+                        '<div class="t-time">' + a.start_time.slice(0,5) + '</div>' +
+                        '<div><div class="t-name">' + a.client_name + '</div><div class="t-service">' + a.service_name + ' &middot; ' + (a.client_phone||a.client_email) + '</div></div>' +
+                        '<div class="t-status"><span class="badge ' + a.status + '">' + a.status + '</span></div></div>';
+                }).join('');
+            }
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function loadAppointments(status) {
+    var url = (status && status !== 'all') ? API + '/appointments?status=' + status + '&limit=50' : API + '/appointments?limit=50';
+    try {
+        var res = await fetch(url, { headers: authHeaders });
+        var data = await res.json();
+        renderAppointments(data.appointments || []);
+    } catch (e) { console.error(e); }
+}
+
+function renderAppointments(list) {
+    var body = document.getElementById('apptsBody');
+    if (!list.length) { body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:40px">No appointments found.</td></tr>'; return; }
+    body.innerHTML = list.map(function(a) {
+        var date = new Date(a.appointment_date + 'T00:00:00').toDateString();
+        var actions = a.status === 'confirmed'
+            ? '<button class="action-btn complete" onclick="updateStatus(\'' + a.id + '\',\'completed\')">Complete</button>' +
+              '<button class="action-btn cancel" onclick="updateStatus(\'' + a.id + '\',\'no_show\')">No-Show</button>' +
+              '<button class="action-btn cancel" onclick="updateStatus(\'' + a.id + '\',\'cancelled\')">Cancel</button>'
+            : '-';
+        return '<tr>' +
+            '<td><div style="font-weight:700">' + a.client_name + '</div><div style="font-size:12px;color:var(--muted)">' + a.client_email + '</div></td>' +
+            '<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:' + a.service_color + ';display:inline-block"></span>' + a.service_name + '</span></td>' +
+            '<td><div style="font-weight:600">' + date + '</div><div style="font-size:12px;color:var(--muted)">' + a.start_time.slice(0,5) + ' - ' + a.end_time.slice(0,5) + '</div></td>' +
+            '<td style="font-weight:700;color:var(--emerald)">KES ' + Number(a.price_charged||0).toLocaleString() + '</td>' +
+            '<td><span class="badge ' + a.status + '">' + a.status.replace('_',' ') + '</span></td>' +
+            '<td>' + actions + '</td></tr>';
+    }).join('');
+}
+
+function filterAppts(status, el) {
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+    el.classList.add('active');
+    loadAppointments(status);
+}
+
+async function updateStatus(id, status) {
+    if (status === 'cancelled' && !confirm('Cancel this appointment?')) return;
+    try {
+        await fetch(API + '/appointments/' + id + '/status', { method:'PATCH', headers: authHeaders, body: JSON.stringify({ status: status }) });
+        loadAppointments('all');
+        document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+        document.querySelector('.tab').classList.add('active');
+    } catch (e) { console.error(e); }
+}
+
+async function loadServices() {
+    try {
+        var res = await fetch(API + '/providers/services/mine', { headers: authHeaders });
+        var data = await res.json();
+        var grid = document.getElementById('servicesGrid');
+        if (!data.services || data.services.length === 0) { grid.innerHTML = '<div style="color:var(--muted);font-size:14px">No services yet. Add your first service.</div>'; return; }
+        grid.innerHTML = data.services.map(function(s) {
+            return '<div class="svc-card">' +
+                '<div class="svc-name"><span class="svc-color-dot" style="background:' + s.color + '"></span>' + s.name + '</div>' +
+                '<div class="svc-meta">' + s.duration_minutes + ' min &middot; ' + (s.is_active ? 'Active' : 'Inactive') + '</div>' +
+                '<div class="svc-price">KES ' + Number(s.price).toLocaleString() + '</div>' +
+                '<div class="svc-actions">' +
+                '<button class="action-btn complete" onclick="editService(\'' + s.id + '\',\'' + s.name.replace(/'/g,"\\'") + '\',\'' + (s.description||'').replace(/'/g,"\\'") + '\',' + s.duration_minutes + ',' + s.price + ',\'' + s.color + '\')">Edit</button>' +
+                '<button class="action-btn cancel" onclick="deleteService(\'' + s.id + '\')">Remove</button>' +
+                '</div></div>';
+        }).join('');
+    } catch (e) { console.error(e); }
+}
+
+function openServiceModal() {
+    editingServiceId = null;
+    document.getElementById('serviceModalTitle').textContent = 'Add New Service';
+    ['svcName','svcDesc','svcDuration','svcPrice'].forEach(function(id){ document.getElementById(id).value = ''; });
+    document.getElementById('svcColor').value = '#6366f1';
+    document.getElementById('serviceModal').classList.add('active');
+}
+
+function editService(id, name, desc, dur, price, color) {
+    editingServiceId = id;
+    document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+    document.getElementById('svcName').value = name;
+    document.getElementById('svcDesc').value = desc;
+    document.getElementById('svcDuration').value = dur;
+    document.getElementById('svcPrice').value = price;
+    document.getElementById('svcColor').value = color;
+    document.getElementById('serviceModal').classList.add('active');
+}
+
+function closeServiceModal() { document.getElementById('serviceModal').classList.remove('active'); }
+
+async function saveService() {
+    var name = document.getElementById('svcName').value.trim();
+    var description = document.getElementById('svcDesc').value.trim();
+    var duration_minutes = parseInt(document.getElementById('svcDuration').value);
+    var price = parseFloat(document.getElementById('svcPrice').value);
+    var color = document.getElementById('svcColor').value;
+    if (!name || !duration_minutes) { alert('Service name and duration are required.'); return; }
+    var body = JSON.stringify({ name: name, description: description, duration_minutes: duration_minutes, price: isNaN(price) ? 0 : price, color: color, is_active: 1 });
+    try {
+        if (editingServiceId) { await fetch(API + '/providers/services/' + editingServiceId, { method:'PUT', headers: authHeaders, body: body }); }
+        else { await fetch(API + '/providers/services', { method:'POST', headers: authHeaders, body: body }); }
+        closeServiceModal(); loadServices();
+    } catch (e) { console.error(e); }
+}
+
+async function deleteService(id) {
+    if (!confirm('Remove this service?')) return;
+    try { await fetch(API + '/providers/services/' + id, { method:'DELETE', headers: authHeaders }); loadServices(); }
+    catch (e) { console.error(e); }
+}
+
+async function loadAvailability() {
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    try {
+        var res = await fetch(API + '/providers/availability/mine', { headers: authHeaders });
+        var data = await res.json();
+        var slots = data.slots || [];
+        document.getElementById('availBody').innerHTML = days.map(function(day, i) {
+            var slot = slots.find(function(s){ return s.day_of_week === i; });
+            var startVal = slot ? slot.start_time.slice(0,5) : '08:00';
+            var endVal = slot ? slot.end_time.slice(0,5) : '17:00';
+            var checked = (slot && slot.is_available) ? 'checked' : '';
+            return '<tr><td style="font-weight:600">' + day + '</td>' +
+                '<td><input type="checkbox" id="avail-' + i + '" ' + checked + '></td>' +
+                '<td><input type="time" id="start-' + i + '" value="' + startVal + '"></td>' +
+                '<td><input type="time" id="end-' + i + '" value="' + endVal + '"></td></tr>';
+        }).join('');
+    } catch (e) { console.error(e); }
+}
+
+async function saveAvailability() {
+    var slots = [];
+    for (var i = 0; i < 7; i++) {
+        slots.push({ day_of_week: i, start_time: document.getElementById('start-'+i).value+':00', end_time: document.getElementById('end-'+i).value+':00', is_available: document.getElementById('avail-'+i).checked });
+    }
+    try {
+        var res = await fetch(API + '/providers/availability', { method:'POST', headers: authHeaders, body: JSON.stringify({ slots: slots }) });
+        var data = await res.json();
+        alert(data.success ? 'Availability saved successfully.' : 'Failed to save: ' + data.message);
+    } catch (e) { console.error(e); }
+}
+
+async function loadReports() {
+    try {
+        var svcRes = await fetch(API + '/reports/by-service', { headers: authHeaders });
+        var clientRes = await fetch(API + '/reports/top-clients', { headers: authHeaders });
+        var sumRes = await fetch(API + '/reports/summary', { headers: authHeaders });
+        var svc = await svcRes.json(), clients = await clientRes.json(), sum = await sumRes.json();
+        if (sum.success) {
+            document.getElementById('reportStats').innerHTML =
+                '<div class="stat-card primary"><div class="stat-label-top">All Time</div><div class="stat-val">' + sum.summary.total_appointments + '</div><div class="stat-desc">Total bookings ever</div></div>' +
+                '<div class="stat-card green"><div class="stat-label-top">Revenue</div><div class="stat-val">' + Number(sum.summary.month_revenue).toLocaleString() + '</div><div class="stat-desc">KES earned this month</div></div>' +
+                '<div class="stat-card amber"><div class="stat-label-top">Completed</div><div class="stat-val">' + sum.summary.completed_count + '</div><div class="stat-desc">Completed this month</div></div>' +
+                '<div class="stat-card red"><div class="stat-label-top">No-Shows</div><div class="stat-val">' + sum.summary.no_show_count + '</div><div class="stat-desc">No-shows this month</div></div>';
+        }
+        if (svc.success) {
+            document.getElementById('serviceReport').innerHTML = svc.data.length
+                ? svc.data.map(function(s){ return '<tr><td><span style="width:8px;height:8px;border-radius:50%;background:'+s.color+';display:inline-block;margin-right:8px"></span>'+s.service_name+'</td><td>'+s.count+'</td><td style="color:var(--emerald)">KES '+Number(s.revenue).toLocaleString()+'</td></tr>'; }).join('')
+                : '<tr><td colspan="3" style="color:var(--muted);text-align:center;padding:20px">No data yet.</td></tr>';
+        }
+        if (clients.success) {
+            document.getElementById('clientReport').innerHTML = clients.data.length
+                ? clients.data.map(function(c){ return '<tr><td><div style="font-weight:600">'+c.name+'</div><div style="font-size:11px;color:var(--muted)">'+c.email+'</div></td><td>'+c.bookings+'</td><td style="color:var(--emerald)">KES '+Number(c.total_spent).toLocaleString()+'</td></tr>'; }).join('')
+                : '<tr><td colspan="3" style="color:var(--muted);text-align:center;padding:20px">No data yet.</td></tr>';
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function loadProfile() {
+    try {
+        var res = await fetch(API + '/auth/profile', { headers: authHeaders });
+        var data = await res.json();
+        if (data.success) {
+            var p = data.provider;
+            document.getElementById('profBusiness').value = p.business_name || '';
+            document.getElementById('profPhone').value = p.phone || '';
+            document.getElementById('profCategory').value = p.category || 'General';
+            document.getElementById('profDesc').value = p.description || '';
+            document.getElementById('profStart').value = p.working_hours_start ? p.working_hours_start.slice(0,5) : '08:00';
+            document.getElementById('profEnd').value = p.working_hours_end ? p.working_hours_end.slice(0,5) : '17:00';
+            document.getElementById('profBuffer').value = p.buffer_time_minutes || 15;
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function saveProfile() {
+    var body = JSON.stringify({
+        business_name: document.getElementById('profBusiness').value,
+        phone: document.getElementById('profPhone').value,
+        category: document.getElementById('profCategory').value,
+        description: document.getElementById('profDesc').value,
+        working_hours_start: document.getElementById('profStart').value,
+        working_hours_end: document.getElementById('profEnd').value,
+        buffer_time_minutes: parseInt(document.getElementById('profBuffer').value)
+    });
+    try {
+        var res = await fetch(API + '/auth/profile', { method:'PUT', headers: authHeaders, body: body });
+        var data = await res.json();
+        var msg = document.getElementById('profileMsg');
+        msg.textContent = data.message;
+        msg.style.color = data.success ? 'var(--emerald)' : '#f87171';
+        if (data.success) {
+            var updated = JSON.parse(localStorage.getItem('provider') || '{}');
+            updated.business_name = document.getElementById('profBusiness').value;
+            localStorage.setItem('provider', JSON.stringify(updated));
+            document.getElementById('sidebarName').textContent = updated.business_name;
+            document.getElementById('sidebarAbbr').textContent = updated.business_name.split(' ').slice(0,2).map(function(w){return w[0];}).join('');
+        }
+    } catch (e) { console.error(e); }
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('provider');
+    window.location.href = '/';
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
